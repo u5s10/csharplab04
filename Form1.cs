@@ -171,6 +171,7 @@ namespace paint
             current = new MyLine();
             current.setBmap(bmap);
             current.setPanel(panel2);
+            current.changeColor(currentColor);
             panel2.MouseDown += new MouseEventHandler(current.mouseDown);
             panel2.MouseUp += new MouseEventHandler(current.mouseUp);
             panel2.MouseMove += new MouseEventHandler(current.mouseMove);
@@ -182,6 +183,7 @@ namespace paint
             current = new MyRectangle();
             current.setBmap(bmap);
             current.setPanel(panel2);
+            current.changeColor(currentColor);
             panel2.MouseDown += new MouseEventHandler(current.mouseDown);
             panel2.MouseUp += new MouseEventHandler(current.mouseUp);
             panel2.MouseMove += new MouseEventHandler(current.mouseMove);
@@ -193,6 +195,7 @@ namespace paint
             current = new MyFree();
             current.setBmap(bmap);
             current.setPanel(panel2);
+            current.changeColor(currentColor);
             panel2.MouseDown += new MouseEventHandler(current.mouseDown);
             panel2.MouseUp += new MouseEventHandler(current.mouseUp);
             panel2.MouseMove += new MouseEventHandler(current.mouseMove);
@@ -200,21 +203,25 @@ namespace paint
 
         private void PictureBox1_Click(object sender, EventArgs e)
         {
+            currentColor = Color.Red;
             current.changeColor(Color.Red);
         }
 
         private void PictureBox2_Click(object sender, EventArgs e)
         {
+            currentColor = Color.Blue;
             current.changeColor(Color.Blue);
         }
 
         private void PictureBox3_Click(object sender, EventArgs e)
         {
+            currentColor = Color.Green;
             current.changeColor(Color.Green);
         }
 
         private void PictureBox4_Click(object sender, EventArgs e)
         {
+            currentColor = Color.Black;
             current.changeColor(Color.Black);
         }
     }
