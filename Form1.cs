@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Encoder = System.Drawing.Imaging.Encoder;
 
 namespace paint
 {
@@ -135,94 +138,214 @@ namespace paint
         }
 
 
-        Bitmap bmap;
-        Shape current;
+        Bitmap currentBitmap;
+        Panel currentPanel;
+        TabPage currentTabPage;
+        int currentIndex;
+        List<Bitmap> bitmaps;
+        Shape currentShape;
         Color currentColor = Color.Black;
+        static Random rnd = new Random();
         public Form1()
         {
             
             InitializeComponent();
-            bmap = new Bitmap(panel2.Width, panel2.Height);
-            current = new MyLine();
-            current.setBmap(bmap);
-            current.setPanel(panel2);
-            panel2.MouseDown += new MouseEventHandler(current.mouseDown);
-            panel2.MouseUp += new MouseEventHandler(current.mouseUp);
-            panel2.MouseMove += new MouseEventHandler(current.mouseMove);
+            tabControl1.TabPages[0].Text = "0";
+            currentIndex = 0;
+            bitmaps = new List<Bitmap>();
+            currentBitmap = new Bitmap(panel2.Width, panel2.Height, PixelFormat.Format32bppArgb);
+            currentShape = new MyLine();
+            currentPanel = panel2;
+            currentShape.setBmap(currentBitmap);
+            currentShape.setPanel(currentPanel);
+            currentPanel.BackgroundImage = currentBitmap;
+            currentPanel.MouseDown += new MouseEventHandler(currentShape.mouseDown);
+            currentPanel.MouseUp += new MouseEventHandler(currentShape.mouseUp);
+            currentPanel.MouseMove += new MouseEventHandler(currentShape.mouseMove);
+            bitmaps.Add(currentBitmap);
             
         }
 
         private void Panel2_Paint(object sender, PaintEventArgs e)
         {
-            e.Graphics.DrawImageUnscaled(bmap, new Point(0, 0));
+            e.Graphics.DrawImageUnscaled(currentBitmap, new Point(0, 0));
             
         }
 
         private void purge()
         {
-            panel2.MouseDown -= new MouseEventHandler(current.mouseDown);
-            panel2.MouseUp -= new MouseEventHandler(current.mouseUp);
-            panel2.MouseMove -= new MouseEventHandler(current.mouseMove);
+            currentPanel.MouseDown -= new MouseEventHandler(currentShape.mouseDown);
+            currentPanel.MouseUp -= new MouseEventHandler(currentShape.mouseUp);
+            currentPanel.MouseMove -= new MouseEventHandler(currentShape.mouseMove);
         }
 
         private void Button1_Click(object sender, EventArgs e)
         {
             purge();
-            current = new MyLine();
-            current.setBmap(bmap);
-            current.setPanel(panel2);
-            current.changeColor(currentColor);
-            panel2.MouseDown += new MouseEventHandler(current.mouseDown);
-            panel2.MouseUp += new MouseEventHandler(current.mouseUp);
-            panel2.MouseMove += new MouseEventHandler(current.mouseMove);
+            currentShape = new MyLine();
+            currentShape.setBmap(currentBitmap);
+            currentShape.setPanel(currentPanel);
+            currentShape.changeColor(currentColor);
+            currentPanel.MouseDown += new MouseEventHandler(currentShape.mouseDown);
+            currentPanel.MouseUp += new MouseEventHandler(currentShape.mouseUp);
+            currentPanel.MouseMove += new MouseEventHandler(currentShape.mouseMove);
         }
 
         private void Button2_Click(object sender, EventArgs e)
         {
             purge();
-            current = new MyRectangle();
-            current.setBmap(bmap);
-            current.setPanel(panel2);
-            current.changeColor(currentColor);
-            panel2.MouseDown += new MouseEventHandler(current.mouseDown);
-            panel2.MouseUp += new MouseEventHandler(current.mouseUp);
-            panel2.MouseMove += new MouseEventHandler(current.mouseMove);
+            currentShape = new MyRectangle();
+            currentShape.setBmap(currentBitmap);
+            currentShape.setPanel(currentPanel);
+            currentShape.changeColor(currentColor);
+            currentPanel.MouseDown += new MouseEventHandler(currentShape.mouseDown);
+            currentPanel.MouseUp += new MouseEventHandler(currentShape.mouseUp);
+            currentPanel.MouseMove += new MouseEventHandler(currentShape.mouseMove);
         }
 
         private void Button3_Click(object sender, EventArgs e)
         {
             purge();
-            current = new MyFree();
-            current.setBmap(bmap);
-            current.setPanel(panel2);
-            current.changeColor(currentColor);
-            panel2.MouseDown += new MouseEventHandler(current.mouseDown);
-            panel2.MouseUp += new MouseEventHandler(current.mouseUp);
-            panel2.MouseMove += new MouseEventHandler(current.mouseMove);
+            currentShape = new MyFree();
+            currentShape.setBmap(currentBitmap);
+            currentShape.setPanel(currentPanel);
+            currentShape.changeColor(currentColor);
+            currentPanel.MouseDown += new MouseEventHandler(currentShape.mouseDown);
+            currentPanel.MouseUp += new MouseEventHandler(currentShape.mouseUp);
+            currentPanel.MouseMove += new MouseEventHandler(currentShape.mouseMove);          
         }
 
         private void PictureBox1_Click(object sender, EventArgs e)
         {
             currentColor = Color.Red;
-            current.changeColor(Color.Red);
+            currentShape.changeColor(Color.Red);
         }
 
         private void PictureBox2_Click(object sender, EventArgs e)
         {
             currentColor = Color.Blue;
-            current.changeColor(Color.Blue);
+            currentShape.changeColor(Color.Blue);
         }
 
         private void PictureBox3_Click(object sender, EventArgs e)
         {
             currentColor = Color.Green;
-            current.changeColor(Color.Green);
+            currentShape.changeColor(Color.Green);
         }
 
         private void PictureBox4_Click(object sender, EventArgs e)
         {
             currentColor = Color.Black;
-            current.changeColor(Color.Black);
+            currentShape.changeColor(Color.Black);
+        }
+
+        private void BtnAdd_Click(object sender, EventArgs e)
+        {
+            // TODO: create new tab, new bitmap, move panel to new tab, update panel background to new bitmap
+            string title = (tabControl1.TabCount).ToString();
+            TabPage myTabPage = new TabPage(title);
+            tabControl1.TabPages.Add(myTabPage);
+            myTabPage.Controls.Add(currentPanel);
+            Bitmap myTabPageBitmap = new Bitmap(panel2.Width, panel2.Height, PixelFormat.Format32bppArgb);
+            Graphics.FromImage(myTabPageBitmap).Clear(Color.White);
+            bitmaps.Add(myTabPageBitmap);
+            currentBitmap = myTabPageBitmap;
+            currentShape.setBmap(currentBitmap);
+            currentShape.setPanel(currentPanel);
+            currentPanel.BackgroundImage = currentBitmap;
+            currentTabPage = myTabPage;
+
+            tabControl1.SelectedTab = currentTabPage;           
+        }
+
+        private void BtnRemove_Click(object sender, EventArgs e)
+        {
+            if(tabControl1.TabCount == 1 )
+            {
+                Environment.Exit(0);
+            }
+            int previousIndex = tabControl1.TabPages.IndexOf(currentTabPage) - 1;
+            currentIndex = Int32.Parse(currentTabPage.Text);
+            if(previousIndex == -1)
+            {
+                previousIndex = 0;
+            }
+            bitmaps.RemoveAt(currentIndex);
+            for(int i = currentIndex + 1; i<tabControl1.TabPages.Count; i++)
+            {
+                tabControl1.TabPages[i].Text =  (Int32.Parse( tabControl1.TabPages[i].Text) - 1).ToString();
+            }
+            tabControl1.TabPages.Remove(currentTabPage);
+            currentTabPage = tabControl1.TabPages[previousIndex];
+            tabControl1.SelectedTab = currentTabPage;
+        }
+
+        private void TabControl1_Selected(object sender, TabControlEventArgs e)
+        {
+            // TODO: move panel to selected tab, update panel background to new bitmap
+
+                label1.Text = (tabControl1.TabPages.IndexOf(e.TabPage)).ToString();
+                //label1.Text = e.TabPage.Text;
+                currentIndex = Int32.Parse(e.TabPage.Text);
+                currentTabPage = tabControl1.TabPages[currentIndex];
+                currentTabPage.Controls.Add(currentPanel);
+                currentPanel.BackgroundImage = bitmaps[currentIndex];
+                currentBitmap = bitmaps[currentIndex];
+
+                currentShape.setBmap(currentBitmap);
+                currentShape.setPanel(currentPanel);
+                      
+        }
+
+        private void BtnSave_Click(object sender, EventArgs e)
+        {
+            try { 
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Filter = "Images|*.png;*.bmp;*.jpg";
+            ImageFormat format = ImageFormat.Png;
+            if (sfd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                string ext = System.IO.Path.GetExtension(sfd.FileName);
+                switch (ext)
+                {
+                    case ".jpg":
+                        format = ImageFormat.Jpeg;
+                        break;
+                    case ".bmp":
+                        format = ImageFormat.Bmp;
+                        break;
+                }
+                currentBitmap.Save(sfd.FileName, format);
+            }
+            // just save bitmap
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("There was a problem saving the file." +
+                    "Check the file permissions.");
+            }
+        }
+
+        private void BtnLoad_Click(object sender, EventArgs e)
+        {
+            // Wrap the creation of the OpenFileDialog instance in a using statement,
+            // rather than manually calling the Dispose method to ensure proper disposal
+            using (OpenFileDialog dlg = new OpenFileDialog())
+            {
+                dlg.Title = "Open Image";
+                dlg.Filter = "Images|*.png;*.bmp;*.jpg";
+
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+
+                    currentBitmap = new Bitmap(dlg.FileName);
+                    bitmaps[currentIndex] = currentBitmap;
+                    currentPanel.BackgroundImage = currentBitmap;
+
+                    currentShape.setBmap(currentBitmap);
+                    currentShape.setPanel(currentPanel);
+                }
+            }
         }
     }
 }
