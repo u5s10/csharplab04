@@ -137,7 +137,10 @@ namespace paint
             }
         }
 
-
+        int mov;
+        int movX;
+        int movY;
+        int max;
         Bitmap currentBitmap;
         Panel currentPanel;
         TabPage currentTabPage;
@@ -150,6 +153,8 @@ namespace paint
         {
             
             InitializeComponent();
+            mov = 0;
+            max = 0;
             tabControl1.TabPages[0].Text = "0";
             currentIndex = 0;
             bitmaps = new List<Bitmap>();
@@ -345,6 +350,52 @@ namespace paint
                     currentShape.setBmap(currentBitmap);
                     currentShape.setPanel(currentPanel);
                 }
+            }
+        }
+
+        private void DragPanel_MouseDown(object sender, MouseEventArgs e)
+        {
+            mov = 1;
+            movX = e.X;
+            movY = e.Y;
+
+        }
+
+        private void DragPanel_MouseUp(object sender, MouseEventArgs e)
+        {
+            mov = 0;
+        }
+
+        private void DragPanel_MouseMove(object sender, MouseEventArgs e)
+        {
+            if(mov == 1)
+            {
+                this.SetDesktopLocation(MousePosition.X - movX, MousePosition.Y - movY - 40);
+            }
+        }
+
+        private void Button4_Click(object sender, EventArgs e)
+        {
+            Environment.Exit(0);
+        }
+
+        private void Button5_Click(object sender, EventArgs e)
+        {
+            this.WindowState = FormWindowState.Minimized;
+        }
+
+        private void Button6_Click(object sender, EventArgs e)
+        {
+            if(max == 0)
+            {
+                this.WindowState = FormWindowState.Maximized;
+                max = 1;
+
+            }
+            else
+            {
+            this.WindowState = FormWindowState.Normal;
+                max = 0;
             }
         }
     }
