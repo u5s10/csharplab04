@@ -287,10 +287,9 @@ namespace paint
 
         private void TabControl1_Selected(object sender, TabControlEventArgs e)
         {
-            // TODO: move panel to selected tab, update panel background to new bitmap
+            
 
-                label1.Text = (tabControl1.TabPages.IndexOf(e.TabPage)).ToString();
-                //label1.Text = e.TabPage.Text;
+               
                 currentIndex = Int32.Parse(e.TabPage.Text);
                 currentTabPage = tabControl1.TabPages[currentIndex];
                 currentTabPage.Controls.Add(currentPanel);
@@ -386,7 +385,7 @@ namespace paint
 
         private void Button6_Click(object sender, EventArgs e)
         {
-            if(max == 0)
+            if (max == 0)
             {
                 this.WindowState = FormWindowState.Maximized;
                 max = 1;
@@ -394,7 +393,7 @@ namespace paint
             }
             else
             {
-            this.WindowState = FormWindowState.Normal;
+                this.WindowState = FormWindowState.Normal;
                 max = 0;
             }
         }
