@@ -286,10 +286,7 @@ namespace paint
         }
 
         private void TabControl1_Selected(object sender, TabControlEventArgs e)
-        {
-            
-
-               
+        {                         
                 currentIndex = Int32.Parse(e.TabPage.Text);
                 currentTabPage = tabControl1.TabPages[currentIndex];
                 currentTabPage.Controls.Add(currentPanel);
@@ -389,7 +386,6 @@ namespace paint
             {
                 this.WindowState = FormWindowState.Maximized;
                 max = 1;
-
             }
             else
             {
